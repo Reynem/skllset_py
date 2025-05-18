@@ -1,23 +1,28 @@
-import sys
 import os
+import sys
 from cx_Freeze import setup, Executable
 
 packages = [
     "PyQt5", "numpy", "PIL", "easyocr", "natasha",
-    "re", "traceback", "torch"
+    "re", "traceback", "torch", "logging", "multiprocessing"
 ]
 
 include_files = [
-    # ("path/to/icon.ico", "icon.ico"),
-    # ("path/to/assets", "assets")
-    # Мне это не надо
+    ("resources", "resources"),
 ]
 
-# Опции для cx_Freeze
+excludes = [
+    "tkinter", "unittest", "email", "html", "http", "urllib",
+    "xml", "pydoc", "doctest", "argparse", "pdb"
+]
+
 build_options = {
     "packages": packages,
-    "excludes": [],
+    "excludes": excludes,
     "include_files": include_files,
+    "build_exe": "build/Anonymizer",
+    "optimize": 2,
+    "include_msvcr": True,
 }
 
 base = None
@@ -26,15 +31,17 @@ if sys.platform == "win32":
 
 executables = [
     Executable(
-        "anonymizer_app.py",
+        "main.py",
         base=base,
         target_name="Anonymizer.exe",
-        icon=None,
+        icon="resources/icons/app_icon.ico",
         shortcut_name="Anonymizer",
-        shortcut_dir="ProgramMenuFolder"
+        shortcut_dir="ProgramMenuFolder",
+        copyright="Your Company © 2025",
     )
 ]
 
+# Настройка установки
 setup(
     name="Anonymizer",
     version="1.0.0",
