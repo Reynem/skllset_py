@@ -3,11 +3,11 @@ import sys
 import os
 import traceback
 from PIL import Image, ImageDraw
-from PyQt5.QtWidgets import (QApplication, QMainWindow, QLineEdit, QPushButton,
+from PyQt5.QtWidgets import (QApplication, QMainWindow, QPushButton,
                              QVBoxLayout, QHBoxLayout, QLabel, QFileDialog,
-                             QWidget, QPlainTextEdit, QMessageBox, QStatusBar)
-from PyQt5.QtGui import QPixmap, QImage
-from PyQt5.QtCore import Qt, QBuffer, QIODevice, QByteArray
+                             QWidget, QPlainTextEdit,  QStatusBar)
+from PyQt5.QtGui import QPixmap
+from PyQt5.QtCore import Qt
 import easyocr
 import numpy as np
 from natasha import (

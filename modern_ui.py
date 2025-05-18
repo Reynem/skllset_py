@@ -1,13 +1,14 @@
 import sys
 import os
 import traceback
-from PyQt5.QtWidgets import (QApplication, QMainWindow, QLineEdit, QPushButton,
+from PyQt5.QtWidgets import (QApplication, QMainWindow, QPushButton,
                              QVBoxLayout, QHBoxLayout, QLabel, QFileDialog,
-                             QWidget, QPlainTextEdit, QMessageBox, QStatusBar,
+                             QWidget, QPlainTextEdit, QStatusBar,
                              QGroupBox, QSplitter, QFrame)
-from PyQt5.QtGui import QPixmap, QImage, QIcon, QFont
-from PyQt5.QtCore import Qt, QSize, QBuffer, QIODevice, QByteArray
+from PyQt5.QtGui import QPixmap, QIcon
+from PyQt5.QtCore import Qt
 
+# Импортируем классы анонимизатора
 from anonymizer import Anonymizer, ImageAnonymizer
 
 
@@ -24,18 +25,13 @@ class ModernAnonymizerApp(QMainWindow):
 
     def loadStyleSheet(self):
         """Загрузка таблицы стилей QSS"""
-        style_path = os.path.join(self.app_paths.get('app_path', ''), 'resources', 'styles', 'modern_style.qss')
+        style_path = os.path.join(self.app_paths.get('styles_dir', ''), 'modern_style.qss')
         if os.path.exists(style_path):
-            with open(style_path, 'r') as style_file:
-                self.setStyleSheet(style_file.read())
-        else:
-            # Если файл не найден, используем встроенный стиль
             try:
-                # Встроенный стиль будет находиться в ресурсах приложения
-                import resources.styles.embedded_styles as embedded_styles
-                self.setStyleSheet(embedded_styles.MODERN_STYLE)
-            except ImportError:
-                pass
+                with open(style_path, 'r', encoding='utf-8') as style_file:
+                    self.setStyleSheet(style_file.read())
+            except Exception as e:
+                print(f"Ошибка при загрузке стилей: {e}")
 
     def initUI(self):
         """Инициализация пользовательского интерфейса"""
@@ -113,15 +109,12 @@ class ModernAnonymizerApp(QMainWindow):
         text_actions = QHBoxLayout()
 
         anonymize_button = QPushButton("Анонимизировать текст")
-        anonymize_button.setIcon(QIcon("resources/icons/anonymize.png"))
         anonymize_button.clicked.connect(self.anonymize_text)
 
         clear_button = QPushButton("Очистить")
-        clear_button.setIcon(QIcon("resources/icons/clear.png"))
         clear_button.clicked.connect(self.clear_text)
 
         copy_button = QPushButton("Копировать результат")
-        copy_button.setIcon(QIcon("resources/icons/copy.png"))
         copy_button.clicked.connect(self.copy_result)
 
         text_actions.addWidget(anonymize_button)
@@ -150,7 +143,6 @@ class ModernAnonymizerApp(QMainWindow):
         image_instructions.setStyleSheet("color: #9D9D9D;")
 
         self.select_image_button = QPushButton("Выбрать изображение")
-        self.select_image_button.setIcon(QIcon("resources/icons/image.png"))
         self.select_image_button.clicked.connect(self.select_image)
 
         image_header.addWidget(image_instructions)
@@ -295,43 +287,3 @@ class ModernAnonymizerApp(QMainWindow):
                 self.processed_image_label.setText("Ошибка при обработке изображения")
                 self.status_bar.showMessage(f"Ошибка: {str(e)}")
                 traceback.print_exc()
-
-
-# Создаем ресурсы для встроенных стилей
-def create_resources():
-    """Создает модуль с встроенными стилями и иконками"""
-    # Создаем директории, если их нет
-    os.makedirs(os.path.join(os.path.dirname(__file__), 'resources', 'styles'), exist_ok=True)
-    os.makedirs(os.path.join(os.path.dirname(__file__), 'resources', 'icons'), exist_ok=True)
-
-    # Создаем модуль с встроенными стилями
-    styles_path = os.path.join(os.path.dirname(__file__), 'resources', 'styles', 'embedded_styles.py')
-
-    # Получаем содержимое QSS стиля из внешнего файла или используем встроенное определение
-    qss_path = os.path.join(os.path.dirname(__file__), 'resources', 'styles', 'modern_style.qss')
-
-    if os.path.exists(qss_path):
-        with open(qss_path, 'r') as qss_file:
-            qss_content = qss_file.read()
-    else:
-        # Здесь будет встроенное определение стиля - для примера используем базовые стили
-        qss_content = """
-        /* Здесь будет содержимое modern_style.qss */
-        QWidget {
-            background-color: #2D2D30;
-            color: #EDEDED;
-        }
-        """
-
-    # Записываем содержимое в Python модуль
-    with open(styles_path, 'w') as py_file:
-        py_file.write(f"# Автоматически сгенерированный модуль стилей\n\n")
-        py_file.write(f"MODERN_STYLE = '''{qss_content}'''")
-
-
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    create_resources()
-    window = ModernAnonymizerApp()
-    window.show()
-    sys.exit(app.exec_())
